@@ -17,5 +17,6 @@ protocol APIEndpoint {
     var path: String { get }
     var method: HTTPMethod { get }
     var headers: [String: String]? { get }
-    var parameters: [String: Any]? { get }
+    var queryParameters: [String: Any]? { get }
+    var bodyParameters: [String: Any]? { get }
 }

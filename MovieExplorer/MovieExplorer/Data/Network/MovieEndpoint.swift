@@ -40,7 +40,7 @@ enum MovieEndpoint: APIEndpoint {
         ]
     }
 
-    var parameters: [String: Any]? {
+    var queryParameters: [String: Any]? {
         switch self {
         case .popular(let page):
             return [
@@ -58,5 +58,9 @@ enum MovieEndpoint: APIEndpoint {
                 "language": "ko-KR"
             ]
         }
+    }
+
+    var bodyParameters: [String: Any]? {
+        return nil
     }
 }
