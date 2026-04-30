@@ -16,7 +16,10 @@ final class DefaultMovieRepository: MovieRepositoryProtocol {
     }
 
     func fetchPopularMovies(page: Int) async throws -> (movies: [Movie], totalPages: Int) {
-        fatalError("Not implemented")
+        let endpoint = MovieEndpoint.popular(page: page)
+        let response: MovieResponseDTO = try await networkService.request(endpoint: endpoint)
+        let movies = response.results.map { $0.toDomain() }
+        return (movies: movies, totalPages: response.totalPages)
     }
 
     func searchMovies(query: String, page: Int) async throws -> (movies: [Movie], totalPages: Int) {
