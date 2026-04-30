@@ -140,4 +140,79 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             XCTAssertNotNil(error)
         }
     }
+
+    // MARK: - fetchMovieDetail
+
+    func test_fetchMovieDetail_id로_올바른_endpoint를_생성한다() async throws {
+        // given
+        let movieId = 550
+        mockNetworkService.requestResult = MovieDetailResponseDTO(
+            id: movieId,
+            title: "파이트 클럽",
+            overview: "줄거리",
+            posterPath: nil,
+            backdropPath: nil,
+            releaseDate: "1999-10-15",
+            runtime: 139,
+            genres: [],
+            voteAverage: 8.4
+        )
+
+        // when
+        _ = try await sut.fetchMovieDetail(id: movieId)
+
+        // then
+        let endpoint = try XCTUnwrap(mockNetworkService.capturedEndpoint as? MovieEndpoint)
+        guard case .detail(let capturedId) = endpoint else {
+            XCTFail("endpoint가 .detail이 아닙니다")
+            return
+        }
+        XCTAssertEqual(capturedId, movieId)
+    }
+
+    func test_fetchMovieDetail_DTO를_도메인으로_변환한다() async throws {
+        // given
+        let dto = MovieDetailResponseDTO(
+            id: 550,
+            title: "파이트 클럽",
+            overview: "불면증에 시달리는 남자가...",
+            posterPath: "/poster.jpg",
+            backdropPath: "/backdrop.jpg",
+            releaseDate: "1999-10-15",
+            runtime: 139,
+            genres: [GenreDTO(id: 18, name: "드라마"), GenreDTO(id: 53, name: "스릴러")],
+            voteAverage: 8.4
+        )
+        mockNetworkService.requestResult = dto
+
+        // when
+        let result = try await sut.fetchMovieDetail(id: 550)
+
+        // then
+        let expected = MovieDetail(
+            id: 550,
+            title: "파이트 클럽",
+            overview: "불면증에 시달리는 남자가...",
+            posterPath: "/poster.jpg",
+            backdropPath: "/backdrop.jpg",
+            releaseDate: "1999-10-15",
+            runtime: 139,
+            genres: ["드라마", "스릴러"],
+            voteAverage: 8.4
+        )
+        XCTAssertEqual(result, expected)
+    }
+
+    func test_fetchMovieDetail_networkService_에러시_에러를_전달한다() async {
+        // given
+        mockNetworkService.requestError = NSError(domain: "test", code: -1)
+
+        // when & then
+        do {
+            _ = try await sut.fetchMovieDetail(id: 1)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertNotNil(error)
+        }
+    }
 }
