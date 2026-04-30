@@ -5,7 +5,7 @@
 //  Created by Liam on 4/29/26.
 //
 
-struct MovieDetail: Equatable {
+nonisolated struct MovieDetail: Equatable {
     let id: Int
     let title: String
     let overview: String
