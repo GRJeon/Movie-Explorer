@@ -70,18 +70,6 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         XCTAssertEqual(result.movies[1], Movie(id: 2, title: "영화2", posterPath: nil, voteAverage: 7.0))
     }
 
-    func test_fetchPopularMovies_networkService_에러시_에러를_전달한다() async {
-        // given
-        mockNetworkService.requestError = NSError(domain: "test", code: -1)
-
-        // when & then
-        do {
-            _ = try await sut.fetchPopularMovies(page: 1)
-            XCTFail("에러가 발생해야 합니다")
-        } catch {
-            XCTAssertNotNil(error)
-        }
-    }
 
     // MARK: - searchMovies
 
@@ -128,18 +116,6 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         XCTAssertEqual(result.movies[0], Movie(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0))
     }
 
-    func test_searchMovies_networkService_에러시_에러를_전달한다() async {
-        // given
-        mockNetworkService.requestError = NSError(domain: "test", code: -1)
-
-        // when & then
-        do {
-            _ = try await sut.searchMovies(query: "test", page: 1)
-            XCTFail("에러가 발생해야 합니다")
-        } catch {
-            XCTAssertNotNil(error)
-        }
-    }
 
     // MARK: - fetchMovieDetail
 
@@ -203,16 +179,72 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         XCTAssertEqual(result, expected)
     }
 
-    func test_fetchMovieDetail_networkService_에러시_에러를_전달한다() async {
+    // MARK: - Error Mapping
+
+    func test_fetchPopularMovies_URLError발생시_networkFailure를_반환한다() async {
+        // given
+        mockNetworkService.requestError = URLError(.notConnectedToInternet)
+
+        // when & then
+        do {
+            _ = try await sut.fetchPopularMovies(page: 1)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertEqual(error as? MovieError, .networkFailure)
+        }
+    }
+
+    func test_searchMovies_DecodingError발생시_decodingFailure를_반환한다() async {
+        // given
+        mockNetworkService.requestError = DecodingError.dataCorrupted(
+            .init(codingPath: [], debugDescription: "test")
+        )
+
+        // when & then
+        do {
+            _ = try await sut.searchMovies(query: "test", page: 1)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertEqual(error as? MovieError, .decodingFailure)
+        }
+    }
+
+    func test_fetchMovieDetail_404에러발생시_invalidRequest를_반환한다() async {
+        // given
+        mockNetworkService.requestError = NetworkError.httpError(statusCode: 404)
+
+        // when & then
+        do {
+            _ = try await sut.fetchMovieDetail(id: 999)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertEqual(error as? MovieError, .invalidRequest)
+        }
+    }
+
+    func test_fetchPopularMovies_500에러발생시_serverError를_반환한다() async {
+        // given
+        mockNetworkService.requestError = NetworkError.httpError(statusCode: 500)
+
+        // when & then
+        do {
+            _ = try await sut.fetchPopularMovies(page: 1)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertEqual(error as? MovieError, .serverError)
+        }
+    }
+
+    func test_searchMovies_알수없는에러발생시_unknown을_반환한다() async {
         // given
         mockNetworkService.requestError = NSError(domain: "test", code: -1)
 
         // when & then
         do {
-            _ = try await sut.fetchMovieDetail(id: 1)
+            _ = try await sut.searchMovies(query: "test", page: 1)
             XCTFail("에러가 발생해야 합니다")
         } catch {
-            XCTAssertNotNil(error)
+            XCTAssertEqual(error as? MovieError, .unknown)
         }
     }
 }
