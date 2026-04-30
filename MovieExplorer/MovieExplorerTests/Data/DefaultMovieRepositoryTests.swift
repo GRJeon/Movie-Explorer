@@ -82,4 +82,62 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             XCTAssertNotNil(error)
         }
     }
+
+    // MARK: - searchMovies
+
+    func test_searchMovies_query와_page로_올바른_endpoint를_생성한다() async throws {
+        // given
+        let query = "인터스텔라"
+        let page = 2
+        mockNetworkService.requestResult = MovieResponseDTO(
+            page: page,
+            totalPages: 1,
+            results: []
+        )
+
+        // when
+        _ = try await sut.searchMovies(query: query, page: page)
+
+        // then
+        let endpoint = try XCTUnwrap(mockNetworkService.capturedEndpoint as? MovieEndpoint)
+        guard case .search(let capturedQuery, let capturedPage) = endpoint else {
+            XCTFail("endpoint가 .search가 아닙니다")
+            return
+        }
+        XCTAssertEqual(capturedQuery, query)
+        XCTAssertEqual(capturedPage, page)
+    }
+
+    func test_searchMovies_networkService에_요청하고_DTO를_도메인으로_변환한다() async throws {
+        // given
+        let dto = MovieResponseDTO(
+            page: 1,
+            totalPages: 3,
+            results: [
+                MovieDTO(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0)
+            ]
+        )
+        mockNetworkService.requestResult = dto
+
+        // when
+        let result = try await sut.searchMovies(query: "인터스텔라", page: 1)
+
+        // then
+        XCTAssertEqual(result.totalPages, 3)
+        XCTAssertEqual(result.movies.count, 1)
+        XCTAssertEqual(result.movies[0], Movie(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0))
+    }
+
+    func test_searchMovies_networkService_에러시_에러를_전달한다() async {
+        // given
+        mockNetworkService.requestError = NSError(domain: "test", code: -1)
+
+        // when & then
+        do {
+            _ = try await sut.searchMovies(query: "test", page: 1)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertNotNil(error)
+        }
+    }
 }
