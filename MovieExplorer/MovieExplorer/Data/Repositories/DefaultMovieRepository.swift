@@ -30,6 +30,8 @@ final class DefaultMovieRepository: MovieRepositoryProtocol {
     }
 
     func fetchMovieDetail(id: Int) async throws -> MovieDetail {
-        fatalError("Not implemented")
+        let endpoint = MovieEndpoint.detail(id: id)
+        let response: MovieDetailResponseDTO = try await networkService.request(endpoint: endpoint)
+        return response.toDomain()
     }
 }
