@@ -6,13 +6,6 @@
 
 import Foundation
 
-private struct AnyEncodable: Encodable {
-    let value: Encodable
-    func encode(to encoder: Encoder) throws {
-        try value.encode(to: encoder)
-    }
-}
-
 final class NetworkService: NetworkServiceProtocol {
 
     private let session: URLSession
@@ -52,7 +45,7 @@ final class NetworkService: NetworkServiceProtocol {
         }
 
         if let bodyParameters = endpoint.bodyParameters {
-            request.httpBody = try JSONEncoder().encode(AnyEncodable(value: bodyParameters))
+            request.httpBody = try JSONEncoder().encode(bodyParameters)
             if request.value(forHTTPHeaderField: "Content-Type") == nil {
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }
