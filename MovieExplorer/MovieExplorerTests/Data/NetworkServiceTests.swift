@@ -29,6 +29,10 @@ final class NetworkServiceTests: XCTestCase {
     }
 
     func test_request가_URLRequest를_정확히_생성한다() async throws {
+        struct MockBody: Encodable {
+            let key: String
+        }
+        
         // Given
         let endpoint = MockEndpoint(
             baseURL: "https://api.test.com",
@@ -36,7 +40,7 @@ final class NetworkServiceTests: XCTestCase {
             method: .post,
             headers: ["Authorization": "Bearer Token"],
             queryParameters: ["query": "test"],
-            bodyParameters: ["key": "value"]
+            bodyParameters: MockBody(key: "value")
         )
         
         var capturedRequest: URLRequest?
@@ -70,12 +74,31 @@ final class NetworkServiceTests: XCTestCase {
         XCTAssertEqual(capturedRequest?.httpMethod, "POST")
         XCTAssertEqual(capturedRequest?.allHTTPHeaderFields?["Authorization"], "Bearer Token")
         
-        // Body 검증
-        if let httpBody = capturedRequest?.httpBody,
-           let jsonObject = try JSONSerialization.jsonObject(with: httpBody, options: []) as? [String: String] {
+        // Body 검증 
+        let httpBody: Data? = {
+            if let body = capturedRequest?.httpBody {
+                return body
+            }
+            guard let stream = capturedRequest?.httpBodyStream else {
+                return nil
+            }
+            stream.open()
+            defer { stream.close() }
+            var data = Data()
+            var buffer = [UInt8](repeating: 0, count: 1024)
+            while stream.hasBytesAvailable {
+                let length = stream.read(&buffer, maxLength: buffer.count)
+                if length == 0 { break }
+                data.append(buffer, count: length)
+            }
+            return data
+        }()
+        
+        if let bodyData = httpBody,
+           let jsonObject = try JSONSerialization.jsonObject(with: bodyData, options: []) as? [String: String] {
             XCTAssertEqual(jsonObject["key"], "value")
         } else {
-            XCTFail("Body parameters가 잘못 설정되었습니다.")
+            XCTFail("Body parameters가 잘못 설정되었거나 추출에 실패했습니다.")
         }
     }
 
@@ -155,5 +178,5 @@ struct MockEndpoint: APIEndpoint {
     var method: HTTPMethod = .get
     var headers: [String: String]? = nil
     var queryParameters: [String: Any]? = nil
-    var bodyParameters: [String: Any]? = nil
+    var bodyParameters: Encodable? = nil
 }
