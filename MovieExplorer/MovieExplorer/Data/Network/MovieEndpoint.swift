@@ -60,7 +60,7 @@ enum MovieEndpoint: APIEndpoint {
         }
     }
 
-    var bodyParameters: [String: Any]? {
+    var bodyParameters: Encodable? {
         return nil
     }
 }
