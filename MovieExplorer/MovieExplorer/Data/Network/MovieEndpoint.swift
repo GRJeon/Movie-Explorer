@@ -12,7 +12,7 @@ enum MovieEndpoint: APIEndpoint {
     case search(query: String, page: Int)
     case detail(id: Int)
 
-    private static let apiKey = "YOUR_API_KEY"
+    private static let apiKey = APIKey.apiKey
 
     var baseURL: String {
         "https://api.themoviedb.org"
