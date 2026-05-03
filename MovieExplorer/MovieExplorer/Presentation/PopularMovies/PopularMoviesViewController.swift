@@ -22,6 +22,7 @@ final class PopularMoviesViewController: UIViewController {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .systemBackground
         cv.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.reuseIdentifier)
+        cv.prefetchDataSource = self
         return cv
     }()
     
@@ -103,6 +104,20 @@ final class PopularMoviesViewController: UIViewController {
                 self?.present(alert, animated: true)
             }
             .store(in: &cancellables)
+    }
+}
+
+extension PopularMoviesViewController: UICollectionViewDataSourcePrefetching {
+
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        guard let lastIndexPath = indexPaths.last else { return }
+
+        let currentItemCount = viewModel.movies.count
+        if currentItemCount > 0, lastIndexPath.row >= currentItemCount - 3 {
+            Task {
+                await viewModel.fetchNextPage()
+            }
+        }
     }
 }
 
