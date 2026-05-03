@@ -21,4 +21,18 @@ struct UIViewPreview<View: UIView>: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIView, context: Context) {}
 }
+
+struct UIViewControllerPreview<ViewController: UIViewController>: UIViewControllerRepresentable {
+    let viewController: ViewController
+
+    init(_ builder: @escaping () -> ViewController) {
+        self.viewController = builder()
+    }
+
+    func makeUIViewController(context: Context) -> ViewController {
+        return viewController
+    }
+
+    func updateUIViewController(_ uiViewController: ViewController, context: Context) {}
+}
 #endif
