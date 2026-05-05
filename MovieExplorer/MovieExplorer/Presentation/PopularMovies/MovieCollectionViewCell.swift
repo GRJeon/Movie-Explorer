@@ -6,6 +6,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class MovieCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "MovieCollectionViewCell"
@@ -76,9 +77,22 @@ final class MovieCollectionViewCell: UICollectionViewCell {
     }
 
     func configure(with movie: Movie) {
-        // TODO: image 공급 방식 교체
-        posterImageView.image = UIImage(named: "moviesample")
         titleLabel.text = movie.title
         ratingLabel.text = "⭐ " + movie.voteAverage.description
+
+        let width = UIScreen.main.bounds.width / 3.0
+        let height = width * 2
+        let processor = DownsamplingImageProcessor(size: CGSize(width: width, height: height))
+                        |> RoundCornerImageProcessor(cornerRadius: 8)
+
+        posterImageView.kf.setImage(
+            with: movie.posterPath,
+            placeholder: UIImage(systemName: "globe.badge.clock"),
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ]
+        )
     }
 }

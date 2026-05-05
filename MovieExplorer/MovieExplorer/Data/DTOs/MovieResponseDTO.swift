@@ -34,7 +34,7 @@ struct MovieDTO: Decodable {
         Movie(
             id: id,
             title: title,
-            posterPath: posterPath,
+            posterPath: ImageURLMapper.makeFullPath(imagePath: posterPath),
             voteAverage: voteAverage
         )
     }
