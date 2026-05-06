@@ -87,7 +87,6 @@ final class MovieCollectionViewCell: UICollectionViewCell {
 
         posterImageView.kf.setImage(
             with: movie.posterPath,
-            placeholder: UIImage(systemName: "globe.badge.clock"),
             options: [
                 .processor(processor),
                 .scaleFactor(UIScreen.main.scale),
