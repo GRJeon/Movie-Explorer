@@ -22,6 +22,10 @@ final class PopularMoviesViewController: UIViewController {
     private let viewModel: PopularMoviesViewModel
     private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     private var cancellables = Set<AnyCancellable>()
+    
+    private lazy var topBarView: TopBarView = {
+        return TopBarView(title: "Movie Explorer")
+    }()
 
     private lazy var collectionView: UICollectionView = {
         let layout = createCompositionalLayout()
@@ -43,6 +47,7 @@ final class PopularMoviesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
         setupUI()
         configureDataSource()
         bindViewModel()
@@ -54,12 +59,20 @@ final class PopularMoviesViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
+        view.addSubview(topBarView)
         view.addSubview(collectionView)
+        
+        topBarView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+        }
+        
         collectionView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(topBarView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
         }
 
-        // 레이아웃 버튼
+        // 레이아웃 메뉴
         let menu = UIMenu(
             title: "레이아웃 변경",
             children: [
@@ -83,12 +96,13 @@ final class PopularMoviesViewController: UIViewController {
                 }
             ]
         )
-        let layoutButton = UIBarButtonItem(
-            title: "배치",
-            image: UIImage(systemName: "square.grid.2x2"),
-            menu: menu
-        )
-        navigationItem.rightBarButtonItem = layoutButton
+
+        let layoutButton = UIButton(type: .system)
+        layoutButton.setImage(UIImage(systemName: "square.grid.2x2"), for: .normal)
+        layoutButton.showsMenuAsPrimaryAction = true
+        layoutButton.menu = menu
+        
+        topBarView.setRightView(layoutButton)
     }
 
     private func changeLayout(columns: Int) {
