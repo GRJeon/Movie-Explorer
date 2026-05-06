@@ -13,10 +13,16 @@ final class PopularMoviesViewController: UIViewController {
     nonisolated private enum Section: Hashable, Sendable {
         case main
     }
+    private enum ColumnsIcon: String {
+        case two = "square.grid.2x2.fill"
+        case three = "square.grid.3x2.fill"
+        case four = "square.grid.4x3.fill"
+    }
 
     private let viewModel: PopularMoviesViewModel
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     private var cancellables = Set<AnyCancellable>()
-    
+
     private lazy var collectionView: UICollectionView = {
         let layout = createCompositionalLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -25,8 +31,6 @@ final class PopularMoviesViewController: UIViewController {
         cv.prefetchDataSource = self
         return cv
     }()
-    
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     
     init(viewModel: PopularMoviesViewModel) {
         self.viewModel = viewModel
@@ -54,8 +58,51 @@ final class PopularMoviesViewController: UIViewController {
         collectionView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
+
+        // 레이아웃 버튼
+        let menu = UIMenu(
+            title: "레이아웃 변경",
+            children: [
+                UIAction(
+                    title: "2열",
+                    image: UIImage(systemName: ColumnsIcon.two.rawValue)
+                ) { [weak self] _ in
+                    self?.changeLayout(columns: 2)
+                },
+                UIAction(
+                    title: "3열",
+                    image: UIImage(systemName: ColumnsIcon.three.rawValue)
+                ) { [weak self] _ in
+                    self?.changeLayout(columns: 3)
+                },
+                UIAction(
+                    title: "4열",
+                    image: UIImage(systemName: ColumnsIcon.four.rawValue)
+                ) { [weak self] _ in
+                    self?.changeLayout(columns: 4)
+                }
+            ]
+        )
+        let layoutButton = UIBarButtonItem(
+            title: "배치",
+            image: UIImage(systemName: "square.grid.2x2"),
+            menu: menu
+        )
+        navigationItem.rightBarButtonItem = layoutButton
     }
-    
+
+    private func changeLayout(columns: Int) {
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
+        let firstVisibleIndexPath = visibleIndexPaths.first
+        let layout = createCompositionalLayout(columns: columns)
+        collectionView.setCollectionViewLayout(layout, animated: true)
+
+        // 보던 item을 top으로 스크롤
+        if let firstVisibleIndexPath {
+            collectionView.scrollToItem(at: firstVisibleIndexPath, at: .top, animated: true)
+        }
+    }
+
     private func createCompositionalLayout(columns: Int = 3) -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0 / CGFloat(columns)),
