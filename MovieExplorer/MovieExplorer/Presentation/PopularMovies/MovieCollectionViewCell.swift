@@ -24,8 +24,8 @@ final class MovieCollectionViewCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.numberOfLines = 1
-        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.numberOfLines = 2
+        label.font = .systemFont(ofSize: 13, weight: .bold)
         label.textColor = .label
         return label
     }()
@@ -34,7 +34,7 @@ final class MovieCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.textAlignment = .left
         label.numberOfLines = 1
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .secondaryLabel
         return label
     }()
@@ -62,17 +62,17 @@ final class MovieCollectionViewCell: UICollectionViewCell {
 
         posterImageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(titleLabel.snp.top).offset(-8)
+            make.height.equalTo(posterImageView.snp.width).multipliedBy(1.5)
         }
-        
+
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(4)
-            make.bottom.equalTo(ratingLabel.snp.top).offset(-4)
+            make.top.equalTo(posterImageView.snp.bottom).offset(4)
         }
-        
+
         ratingLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(4)
-            make.bottom.equalToSuperview().inset(4)
+            make.top.equalTo(titleLabel.snp.bottom).offset(4)
         }
     }
 

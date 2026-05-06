@@ -56,17 +56,19 @@ final class PopularMoviesViewController: UIViewController {
         }
     }
     
-    private func createCompositionalLayout() -> UICollectionViewLayout {
+    private func createCompositionalLayout(columns: Int = 3) -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0 / 3.0),
+            widthDimension: .fractionalWidth(1.0 / CGFloat(columns)),
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
 
+        // 포스터 크기 동적 계산, 텍스트 높이는 정적
+        let groupHeight = UIScreen.main.bounds.width / CGFloat(columns) * 1.5 + 40
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .fractionalWidth(2.0 / 3.0)
+            heightDimension: .absolute(groupHeight)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
