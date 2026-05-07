@@ -104,4 +104,22 @@ final class PopularMoviesViewModelTests: XCTestCase {
         // Then
         XCTAssertEqual(mockUseCase.executeCallCount, 1, "마지막 페이지 이후에는 더 이상 UseCase가 호출되지 않아야 합니다.")
     }
+
+    func test_중복된_데이터가_서버에서_내려올경우_하나만_추가된다() async {
+        // Given
+        let movie1 = Movie(id: 1, title: "니모를 찾아서", posterPath: nil, voteAverage: 8.0)
+        mockUseCase.mockResult = .success((movies: [movie1], totalPages: 5))
+        await sut.fetchNextPage()
+        
+        // When
+        let duplicateMovie = Movie(id: 1, title: "니모를 찾아서", posterPath: nil, voteAverage: 8.0)
+        let movie2 = Movie(id: 2, title: "인크레더블", posterPath: nil, voteAverage: 7.5)
+        mockUseCase.mockResult = .success((movies: [duplicateMovie, movie2], totalPages: 5))
+        await sut.fetchNextPage()
+        
+        // Then
+        XCTAssertEqual(sut.movies.count, 2, "중복된 데이터는 필터링되어야 합니다.")
+        XCTAssertEqual(sut.movies[0].id, 1)
+        XCTAssertEqual(sut.movies[1].id, 2)
+    }
 }
