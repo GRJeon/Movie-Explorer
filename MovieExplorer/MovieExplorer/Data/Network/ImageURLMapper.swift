@@ -20,6 +20,8 @@ enum ImageURLMapper {
 
     static func makeFullPath(imagePath: String?) -> URL? {
         guard let imagePath, !imagePath.isEmpty else { return nil }
-        return URL(string: baseURL + size + imagePath)
+        return URL(string: baseURL)?
+            .appendingPathComponent(size)
+            .appendingPathComponent(imagePath)
     }
 }
