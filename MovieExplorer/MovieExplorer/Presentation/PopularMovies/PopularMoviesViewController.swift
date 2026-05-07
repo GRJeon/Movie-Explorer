@@ -115,7 +115,7 @@ final class PopularMoviesViewController: UIViewController {
 
         // 보던 item을 top으로 스크롤
         if let firstVisibleIndexPath {
-            collectionView.scrollToItem(at: firstVisibleIndexPath, at: .top, animated: true)
+            collectionView.scrollToItem(at: firstVisibleIndexPath, at: .top, animated: false)
         }
     }
 
