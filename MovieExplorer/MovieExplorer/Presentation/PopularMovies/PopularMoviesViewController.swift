@@ -177,7 +177,7 @@ extension PopularMoviesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let currentItemCount = viewModel.movies.count
 
-        if currentItemCount > 0, indexPath.row >= currentItemCount - 3 {
+        if currentItemCount > 0, indexPath.row >= currentItemCount - 4 {
             Task {
                 await viewModel.fetchNextPage()
             }
