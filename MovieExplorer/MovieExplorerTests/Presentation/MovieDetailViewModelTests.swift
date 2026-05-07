@@ -48,8 +48,8 @@ final class MovieDetailViewModelTests: XCTestCase {
         XCTAssertEqual(mockUseCase.executeCallCount, 1)
         XCTAssertEqual(mockUseCase.lastRequestedId, mockMovieId)
         XCTAssertEqual(sut.movieDetail, expectedDetail)
-        XCTAssertFalse(sut.isLoading)
-        XCTAssertNil(sut.errorMessage)
+        XCTAssertEqual(sut.state, .loaded)
+        XCTAssertEqual(sut.releaseDateText, "1999.10.15")
     }
     
     func test_에러발생시_errorMessage가_세팅된다() async {
@@ -60,8 +60,7 @@ final class MovieDetailViewModelTests: XCTestCase {
         await sut.fetchDetail()
         
         // Then
-        XCTAssertNotNil(sut.errorMessage)
-        XCTAssertFalse(sut.isLoading)
+        XCTAssertEqual(sut.state, .error(MovieError.networkFailure.description))
         XCTAssertNil(sut.movieDetail)
     }
 }

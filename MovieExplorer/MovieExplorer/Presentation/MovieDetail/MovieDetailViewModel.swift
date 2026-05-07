@@ -7,13 +7,26 @@
 import Foundation
 import Combine
 
+enum DetailViewState: Equatable {
+    case idle
+    case loading
+    case loaded
+    case error(String)
+}
+
 @MainActor
 final class MovieDetailViewModel {
     
-    @Published private(set) var movieDetail: MovieDetail?
-    @Published private(set) var isLoading: Bool = false
-    @Published private(set) var errorMessage: String? = nil
+    @Published private(set) var state: DetailViewState = .idle
     
+    private(set) var movieDetail: MovieDetail?
+    var releaseDateText: String? {
+        guard let dateString = movieDetail?.releaseDate, !dateString.isEmpty else {
+            return nil
+        }
+        return dateString.replacingOccurrences(of: "-", with: ".")
+    }
+
     private let movieId: Int
     private let getMovieDetailUseCase: GetMovieDetailUseCase
     
@@ -23,20 +36,17 @@ final class MovieDetailViewModel {
     }
     
     func fetchDetail() async {
-        guard !isLoading else { return }
-        
-        isLoading = true
-        errorMessage = nil
+        if state == .loading { return }
+        state = .loading
         
         do {
             let result = try await getMovieDetailUseCase.execute(id: movieId)
             movieDetail = result
+            state = .loaded
         } catch let error as MovieError {
-            errorMessage = error.description
+            state = .error(error.description)
         } catch {
-            errorMessage = "예기치 못한 오류가 발생했습니다: \(error.localizedDescription)"
+            state = .error("예기치 못한 오류가 발생했습니다: \(error.localizedDescription)")
         }
-        
-        isLoading = false
     }
 }
