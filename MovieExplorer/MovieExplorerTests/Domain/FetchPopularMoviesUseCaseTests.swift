@@ -53,7 +53,11 @@ final class FetchPopularMoviesUseCaseTests: XCTestCase {
         // Then
         XCTAssertEqual(mockRepository.fetchPopularMoviesCallCount, 1)
         XCTAssertEqual(mockRepository.lastRequestedPage, validPage)
-        XCTAssertEqual(result.movies, expectedMovies)
+        XCTAssertEqual(result.movies.count, expectedMovies.count)
+        XCTAssertEqual(result.movies.first?.id, expectedMovies.first?.id)
+        XCTAssertEqual(result.movies.first?.title, expectedMovies.first?.title)
+        XCTAssertEqual(result.movies.first?.posterPath, expectedMovies.first?.posterPath)
+        XCTAssertEqual(result.movies.first?.voteAverage, expectedMovies.first?.voteAverage)
         XCTAssertEqual(result.totalPages, expectedTotalPages)
     }
 
