@@ -9,9 +9,13 @@ import Foundation
 final class MockMovieRepository: MovieRepositoryProtocol {
     
     var mockResult: Result<(movies: [Movie], totalPages: Int), Error>?
+    var mockDetailResult: Result<MovieDetail, Error>?
     
     var fetchPopularMoviesCallCount = 0
     var lastRequestedPage: Int?
+    
+    var fetchMovieDetailCallCount = 0
+    var lastRequestedId: Int?
     
     func fetchPopularMovies(page: Int) async throws -> (movies: [Movie], totalPages: Int) {
         fetchPopularMoviesCallCount += 1
@@ -34,6 +38,18 @@ final class MockMovieRepository: MovieRepositoryProtocol {
     }
     
     func fetchMovieDetail(id: Int) async throws -> MovieDetail {
-        fatalError("Not needed for this test")
+        fetchMovieDetailCallCount += 1
+        lastRequestedId = id
+        
+        if let result = mockDetailResult {
+            switch result {
+            case .success(let detail):
+                return detail
+            case .failure(let error):
+                throw error
+            }
+        }
+        
+        fatalError("mockDetailResult is not set")
     }
 }
