@@ -6,10 +6,17 @@
 //
 
 import Foundation
+import UIKit
 
 enum ImageURLMapper {
     static let baseURL = "https://image.tmdb.org/t/p/"
-    static let size = "w500"
+    static let size: String = {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            "w780"
+        } else {
+            "w500"
+        }
+    }()
 
     static func makeFullPath(imagePath: String?) -> URL? {
         guard let imagePath, !imagePath.isEmpty else { return nil }
