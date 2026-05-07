@@ -66,7 +66,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         // then
         XCTAssertEqual(result.totalPages, 5)
         XCTAssertEqual(result.movies.count, 2)
-        XCTAssertEqual(result.movies[0], Movie(id: 1, title: "영화1", posterPath: "/poster1.jpg", voteAverage: 8.5))
+        XCTAssertEqual(result.movies[0], Movie(id: 1, title: "영화1", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/poster1.jpg"), voteAverage: 8.5))
         XCTAssertEqual(result.movies[1], Movie(id: 2, title: "영화2", posterPath: nil, voteAverage: 7.0))
     }
 
@@ -113,7 +113,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         // then
         XCTAssertEqual(result.totalPages, 3)
         XCTAssertEqual(result.movies.count, 1)
-        XCTAssertEqual(result.movies[0], Movie(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0))
+        XCTAssertEqual(result.movies[0], Movie(id: 10, title: "인터스텔라", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/interstellar.jpg"), voteAverage: 9.0))
     }
 
 
@@ -169,8 +169,8 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             id: 550,
             title: "파이트 클럽",
             overview: "불면증에 시달리는 남자가...",
-            posterPath: "/poster.jpg",
-            backdropPath: "/backdrop.jpg",
+            posterPath: URL(string: "https://image.tmdb.org/t/p/w500/poster.jpg"),
+            backdropPath: URL(string: "https://image.tmdb.org/t/p/w500/backdrop.jpg"),
             releaseDate: "1999-10-15",
             runtime: 139,
             genres: ["드라마", "스릴러"],
