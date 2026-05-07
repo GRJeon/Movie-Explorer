@@ -30,6 +30,7 @@
 		0CF3A7CD2FA1E08F0083DC3C /* Exceptions for "MovieExplorer" folder in "MovieExplorer" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				App/APIKey.sample.swift,
 				Info.plist,
 			);
 			target = 0CF3A7A42FA1E08D0083DC3C /* MovieExplorer */;
