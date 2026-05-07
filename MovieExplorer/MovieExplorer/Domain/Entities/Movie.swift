@@ -20,15 +20,6 @@ extension Movie {
     }
 
     nonisolated static func == (lhs: Movie, rhs: Movie) -> Bool {
-        #if DEBUG
-        // 테스트 및 시뮬레이터 환경: 모든 프로퍼티를 꼼꼼하게 비교
-        return lhs.id == rhs.id &&
-        lhs.title == rhs.title &&
-        lhs.posterPath == rhs.posterPath &&
-        lhs.voteAverage == rhs.voteAverage
-        #else
-        // rlease: 서버의 데이터가 자주 변하지 않으므로 id만 비교
-        return lhs.id == rhs.id
-        #endif
+        lhs.id == rhs.id
     }
 }

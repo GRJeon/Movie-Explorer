@@ -66,8 +66,17 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         // then
         XCTAssertEqual(result.totalPages, 5)
         XCTAssertEqual(result.movies.count, 2)
-        XCTAssertEqual(result.movies[0], Movie(id: 1, title: "영화1", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/poster1.jpg"), voteAverage: 8.5))
-        XCTAssertEqual(result.movies[1], Movie(id: 2, title: "영화2", posterPath: nil, voteAverage: 7.0))
+        let expectedMovie0 = Movie(id: 1, title: "영화1", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/poster1.jpg"), voteAverage: 8.5)
+        XCTAssertEqual(result.movies[0].id, expectedMovie0.id)
+        XCTAssertEqual(result.movies[0].title, expectedMovie0.title)
+        XCTAssertEqual(result.movies[0].posterPath, expectedMovie0.posterPath)
+        XCTAssertEqual(result.movies[0].voteAverage, expectedMovie0.voteAverage)
+        
+        let expectedMovie1 = Movie(id: 2, title: "영화2", posterPath: nil, voteAverage: 7.0)
+        XCTAssertEqual(result.movies[1].id, expectedMovie1.id)
+        XCTAssertEqual(result.movies[1].title, expectedMovie1.title)
+        XCTAssertEqual(result.movies[1].posterPath, expectedMovie1.posterPath)
+        XCTAssertEqual(result.movies[1].voteAverage, expectedMovie1.voteAverage)
     }
 
 
@@ -113,7 +122,11 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         // then
         XCTAssertEqual(result.totalPages, 3)
         XCTAssertEqual(result.movies.count, 1)
-        XCTAssertEqual(result.movies[0], Movie(id: 10, title: "인터스텔라", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/interstellar.jpg"), voteAverage: 9.0))
+        let expectedMovie = Movie(id: 10, title: "인터스텔라", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/interstellar.jpg"), voteAverage: 9.0)
+        XCTAssertEqual(result.movies[0].id, expectedMovie.id)
+        XCTAssertEqual(result.movies[0].title, expectedMovie.title)
+        XCTAssertEqual(result.movies[0].posterPath, expectedMovie.posterPath)
+        XCTAssertEqual(result.movies[0].voteAverage, expectedMovie.voteAverage)
     }
 
 
