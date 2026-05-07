@@ -16,7 +16,8 @@ final class PopularMoviesViewModel {
     
     private var currentPage: Int = 0
     private var totalPages: Int = 1
-    
+    private var set: Set<Int> = []
+
     private let fetchPopularMoviesUseCase: FetchPopularMoviesUseCase
     
     init(fetchPopularMoviesUseCase: FetchPopularMoviesUseCase) {
@@ -32,8 +33,13 @@ final class PopularMoviesViewModel {
         do {
             let nextPage = currentPage + 1
             let result = try await fetchPopularMoviesUseCase.execute(page: nextPage)
-            
-            movies.append(contentsOf: result.movies)
+
+            for it in result.movies {
+                if !set.contains(it.id) {
+                    movies.append(it)
+                    set.insert(it.id)
+                }
+            }
             currentPage = nextPage
             totalPages = result.totalPages
         } catch let error as MovieError {
