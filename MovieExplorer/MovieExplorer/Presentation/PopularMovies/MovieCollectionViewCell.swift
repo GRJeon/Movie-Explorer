@@ -80,8 +80,8 @@ final class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = movie.title
         ratingLabel.text = "⭐ " + movie.voteAverage.description
 
-        let width = UIScreen.main.bounds.width / 3.0
-        let height = width * 2
+        let width = self.bounds.width > 0 ? self.bounds.width : 150
+        let height = width * 1.5
         let processor = DownsamplingImageProcessor(size: CGSize(width: width, height: height))
                         |> RoundCornerImageProcessor(cornerRadius: 8)
 
@@ -89,7 +89,7 @@ final class MovieCollectionViewCell: UICollectionViewCell {
             with: movie.posterPath,
             options: [
                 .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
+                .scaleFactor(self.traitCollection.displayScale),
                 .cacheOriginalImage
             ]
         )
