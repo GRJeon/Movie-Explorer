@@ -23,6 +23,7 @@ final class PopularMoviesViewController: UIViewController {
     private let viewModel: PopularMoviesViewModel
     private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     private var cancellables = Set<AnyCancellable>()
+    private var imagePrefetchers: [IndexPath: ImagePrefetcher] = [:]
     
     private lazy var topBarView: TopBarView = {
         return TopBarView(title: "Movie Explorer")
@@ -189,16 +190,22 @@ extension PopularMoviesViewController: UICollectionViewDelegate {
 extension PopularMoviesViewController: UICollectionViewDataSourcePrefetching {
 
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        var urlsToPrefetch: [URL] = []
         for indexPath in indexPaths {
             guard indexPath.item < viewModel.movies.count else { continue }
 
-            let movie = viewModel.movies[indexPath.item]
-            if let url = movie.posterPath {
-                urlsToPrefetch.append(url)
+            if let url = viewModel.movies[indexPath.item].posterPath {
+                let prefetcher = ImagePrefetcher(resources: [url])
+                imagePrefetchers[indexPath] = prefetcher
+                prefetcher.start()
             }
         }
-        ImagePrefetcher(resources: urlsToPrefetch).start()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            imagePrefetchers[indexPath]?.stop()
+            imagePrefetchers.removeValue(forKey: indexPath)
+        }
     }
 }
 
