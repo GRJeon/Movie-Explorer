@@ -16,7 +16,7 @@ final class PopularMoviesViewModel {
     
     private var currentPage: Int = 0
     private var totalPages: Int = 1
-    private var set: Set<Int> = []
+    private var idSet: Set<Int> = []
 
     private let fetchPopularMoviesUseCase: FetchPopularMoviesUseCase
     
@@ -34,8 +34,8 @@ final class PopularMoviesViewModel {
             let nextPage = currentPage + 1
             let result = try await fetchPopularMoviesUseCase.execute(page: nextPage)
 
-            let newMovies = result.movies.filter { !set.contains($0.id) }
-            newMovies.forEach { set.insert($0.id) }
+            let newMovies = result.movies.filter { !idSet.contains($0.id) }
+            newMovies.forEach { idSet.insert($0.id) }
             movies.append(contentsOf: newMovies)
 
             currentPage = nextPage
