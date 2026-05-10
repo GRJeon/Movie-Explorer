@@ -32,7 +32,7 @@ struct MovieDetailResponseDTO: Decodable {
             title: title,
             overview: overview,
             posterPath: ImageURLMapper.makeFullPath(imagePath: posterPath),
-            backdropPath: ImageURLMapper.makeFullPath(imagePath: backdropPath),
+            backdropPath: ImageURLMapper.makeFullPath(imagePath: backdropPath, type: .backdrop),
             releaseDate: releaseDate,
             runtime: runtime,
             genres: genres.map { $0.name },
