@@ -183,7 +183,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             title: "파이트 클럽",
             overview: "불면증에 시달리는 남자가...",
             posterPath: URL(string: "https://image.tmdb.org/t/p/w500/poster.jpg"),
-            backdropPath: URL(string: "https://image.tmdb.org/t/p/w500/backdrop.jpg"),
+            backdropPath: URL(string: "https://image.tmdb.org/t/p/w1280/backdrop.jpg"),
             releaseDate: "1999-10-15",
             runtime: 139,
             genres: ["드라마", "스릴러"],
