@@ -190,7 +190,8 @@ final class MovieDetailViewController: UIViewController {
         titleInfoView.configure(
             title: movie.title,
             voteAverageText: viewModel.voteAverageText,
-            releaseDateText: viewModel.releaseDateText
+            releaseDateText: viewModel.releaseDateText,
+            genres: movie.genres
         )
 
         if let url = viewModel.movieDetail?.backdropPath {
@@ -245,7 +246,7 @@ struct MovieDetailPreview: PreviewProvider {
         let networkService = NetworkService()
         let repository = DefaultMovieRepository(networkService: networkService)
         let useCase = DefaultGetMovieDetailUseCase(movieRepository: repository)
-        let viewModel = MovieDetailViewModel(movieId: 12, getMovieDetailUseCase: useCase)
+        let viewModel = MovieDetailViewModel(movieId: 502356, getMovieDetailUseCase: useCase)
         let vc = MovieDetailViewController(viewModel: viewModel)
         return UINavigationController(rootViewController: vc)
     }

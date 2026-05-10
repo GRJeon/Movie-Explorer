@@ -46,6 +46,24 @@ final class MovieTitleInfoView: UIView {
         return label
     }()
     
+    private let genreStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 4
+        return stack
+    }()
+    
+    private let tagImageView: UIImageView = {
+        let iv = UIImageView(image: UIImage(systemName: "tag"))
+        iv.tintColor = .gray
+        return iv
+    }()
+    
+    private let genreLabel: UILabel = {
+        let label = UILabel()
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -58,24 +76,33 @@ final class MovieTitleInfoView: UIView {
     private func setupUI() {
         addSubview(titleLabel)
         addSubview(infoStackView)
-        
+        addSubview(genreStackView)
+
         titleLabel.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
         }
         
         infoStackView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.leading.bottom.equalToSuperview()
+            make.leading.equalToSuperview()
         }
-        
+
+        genreStackView.snp.makeConstraints { make in
+            make.top.equalTo(infoStackView.snp.bottom).offset(8)
+            make.leading.equalToSuperview()
+        }
+
         dateStackView.addArrangedSubview(calendarImageView)
         dateStackView.addArrangedSubview(dateLabel)
         
         infoStackView.addArrangedSubview(ratingLabel)
         infoStackView.addArrangedSubview(dateStackView)
+
+        genreStackView.addArrangedSubview(tagImageView)
+        genreStackView.addArrangedSubview(genreLabel)
     }
     
-    func configure(title: String?, voteAverageText: String?, releaseDateText: String?) {
+    func configure(title: String?, voteAverageText: String?, releaseDateText: String?, genres: [String]) {
         titleLabel.text = title
         
         ratingLabel.text = voteAverageText
@@ -87,5 +114,13 @@ final class MovieTitleInfoView: UIView {
         } else {
             dateStackView.isHidden = true
         }
+        
+        if !genres.isEmpty {
+            genreLabel.text = genres.joined(separator: ", ")
+            genreStackView.isHidden = false
+        } else {
+            genreStackView.isHidden = true
+        }
     }
+    
 }
