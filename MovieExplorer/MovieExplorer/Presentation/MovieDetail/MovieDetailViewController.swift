@@ -108,7 +108,7 @@ final class MovieDetailViewController: UIViewController {
         scrollView.addSubview(contentView)
 
         view.addSubview(loadingIndicator)
-        
+
         contentView.addSubview(posterImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(infoStackView)
@@ -148,6 +148,11 @@ final class MovieDetailViewController: UIViewController {
             make.top.equalTo(posterImageView.snp.top).inset(8)
             make.leading.equalTo(posterImageView.snp.trailing).offset(15)
             make.trailing.equalToSuperview().inset(20)
+        }
+
+        infoStackView.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
         }
 
         overviewHeaderLabel.snp.makeConstraints { make in
@@ -195,6 +200,7 @@ final class MovieDetailViewController: UIViewController {
         titleLabel.text = movie.title
         overviewLabel.text = movie.overview
 
+        setInfoLabel()
 
         if let url = viewModel.movieDetail?.backdropPath {
             backdropImageView.kf.setImage(with: url, options: [.transition(.fade(0.3))])
@@ -203,7 +209,29 @@ final class MovieDetailViewController: UIViewController {
             posterImageView.kf.setImage(with: url)
         }
     }
-    
+
+    private func setInfoLabel() {
+        infoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        let ratingLabel = UILabel()
+        ratingLabel.text = viewModel.voteAverageText
+
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 4
+        if let date = viewModel.releaseDateText {
+            let calendarImage = UIImageView(image: UIImage(systemName: "calendar"))
+            calendarImage.tintColor = .gray
+            let dateLabel = UILabel()
+            dateLabel.text = date
+            stackView.addArrangedSubview(calendarImage)
+            stackView.addArrangedSubview(dateLabel)
+        }
+
+        infoStackView.addArrangedSubview(ratingLabel)
+        infoStackView.addArrangedSubview(stackView)
+    }
+
     private func showError(_ message: String) {
         let alert = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default))

@@ -20,6 +20,10 @@ final class MovieDetailViewModel {
     @Published private(set) var state: DetailViewState = .idle
     
     private(set) var movieDetail: MovieDetail?
+    var voteAverageText: String? {
+        guard let voteAverage = movieDetail?.voteAverage else { return nil }
+        return "⭐ " + voteAverage.description
+    }
     var releaseDateText: String? {
         guard let dateString = movieDetail?.releaseDate, !dateString.isEmpty else {
             return nil
