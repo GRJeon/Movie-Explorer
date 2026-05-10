@@ -37,18 +37,12 @@ final class MovieDetailViewController: UIViewController {
         return iv
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
-        label.numberOfLines = 2
-        return label
-    }()
-    
-    private let infoStackView: UIStackView = {
+    private let titleInfoView = MovieTitleInfoView()
+
+    private let tagView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.spacing = 12
-        stack.alignment = .center
         return stack
     }()
 
@@ -110,8 +104,7 @@ final class MovieDetailViewController: UIViewController {
         view.addSubview(loadingIndicator)
 
         contentView.addSubview(posterImageView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(infoStackView)
+        contentView.addSubview(titleInfoView)
         contentView.addSubview(overviewHeaderLabel)
         contentView.addSubview(overviewLabel)
 
@@ -144,15 +137,10 @@ final class MovieDetailViewController: UIViewController {
             make.width.equalTo(posterImageView.snp.height).multipliedBy(2.0 / 3.0)
         }
 
-        titleLabel.snp.makeConstraints { make in
+        titleInfoView.snp.makeConstraints { make in
             make.top.equalTo(posterImageView.snp.top).inset(8)
             make.leading.equalTo(posterImageView.snp.trailing).offset(15)
             make.trailing.equalToSuperview().inset(20)
-        }
-
-        infoStackView.snp.makeConstraints { make in
-            make.leading.equalTo(titleLabel)
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
         }
 
         overviewHeaderLabel.snp.makeConstraints { make in
@@ -197,10 +185,13 @@ final class MovieDetailViewController: UIViewController {
     
     private func updateUI() {
         guard let movie = viewModel.movieDetail else { return }
-        titleLabel.text = movie.title
         overviewLabel.text = movie.overview
-
-        setInfoLabel()
+        
+        titleInfoView.configure(
+            title: movie.title,
+            voteAverageText: viewModel.voteAverageText,
+            releaseDateText: viewModel.releaseDateText
+        )
 
         if let url = viewModel.movieDetail?.backdropPath {
             backdropImageView.kf.setImage(with: url, options: [.transition(.fade(0.3))])
@@ -208,28 +199,6 @@ final class MovieDetailViewController: UIViewController {
         if let url = viewModel.movieDetail?.posterPath {
             posterImageView.kf.setImage(with: url)
         }
-    }
-
-    private func setInfoLabel() {
-        infoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-        let ratingLabel = UILabel()
-        ratingLabel.text = viewModel.voteAverageText
-
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 4
-        if let date = viewModel.releaseDateText {
-            let calendarImage = UIImageView(image: UIImage(systemName: "calendar"))
-            calendarImage.tintColor = .gray
-            let dateLabel = UILabel()
-            dateLabel.text = date
-            stackView.addArrangedSubview(calendarImage)
-            stackView.addArrangedSubview(dateLabel)
-        }
-
-        infoStackView.addArrangedSubview(ratingLabel)
-        infoStackView.addArrangedSubview(stackView)
     }
 
     private func showError(_ message: String) {
