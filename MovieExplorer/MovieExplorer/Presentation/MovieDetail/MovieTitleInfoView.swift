@@ -46,23 +46,7 @@ final class MovieTitleInfoView: UIView {
         return label
     }()
     
-    private let genreStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = 4
-        return stack
-    }()
-    
-    private let tagImageView: UIImageView = {
-        let iv = UIImageView(image: UIImage(systemName: "tag"))
-        iv.tintColor = .gray
-        return iv
-    }()
-    
-    private let genreLabel: UILabel = {
-        let label = UILabel()
-        return label
-    }()
+    private let genreTagView = GenreTagView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -76,7 +60,7 @@ final class MovieTitleInfoView: UIView {
     private func setupUI() {
         addSubview(titleLabel)
         addSubview(infoStackView)
-        addSubview(genreStackView)
+        addSubview(genreTagView)
 
         titleLabel.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -87,9 +71,9 @@ final class MovieTitleInfoView: UIView {
             make.leading.equalToSuperview()
         }
 
-        genreStackView.snp.makeConstraints { make in
+        genreTagView.snp.makeConstraints { make in
             make.top.equalTo(infoStackView.snp.bottom).offset(8)
-            make.leading.equalToSuperview()
+            make.leading.trailing.bottom.equalToSuperview()
         }
 
         dateStackView.addArrangedSubview(calendarImageView)
@@ -97,9 +81,6 @@ final class MovieTitleInfoView: UIView {
         
         infoStackView.addArrangedSubview(ratingLabel)
         infoStackView.addArrangedSubview(dateStackView)
-
-        genreStackView.addArrangedSubview(tagImageView)
-        genreStackView.addArrangedSubview(genreLabel)
     }
     
     func configure(title: String?, voteAverageText: String?, releaseDateText: String?, genres: [String]) {
@@ -116,10 +97,10 @@ final class MovieTitleInfoView: UIView {
         }
         
         if !genres.isEmpty {
-            genreLabel.text = genres.joined(separator: ", ")
-            genreStackView.isHidden = false
+            genreTagView.configure(genres: genres)
+            genreTagView.isHidden = false
         } else {
-            genreStackView.isHidden = true
+            genreTagView.isHidden = true
         }
     }
     
