@@ -52,4 +52,8 @@ final class MockMovieRepository: MovieRepositoryProtocol {
         
         fatalError("mockDetailResult is not set")
     }
+
+    func fetchYoutubeKey(id: Int) async throws -> String? {
+        fatalError("Not needed for this test")
+    }
 }

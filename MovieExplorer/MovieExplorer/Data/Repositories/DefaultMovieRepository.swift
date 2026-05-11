@@ -47,6 +47,17 @@ final class DefaultMovieRepository: MovieRepositoryProtocol {
         }
     }
 
+    func fetchYoutubeKey(id: Int) async throws -> String? {
+        do {
+            let endpoint = MovieEndpoint.video(id: id)
+            let response: VideoResponseDTO = try await networkService.request(endpoint: endpoint)
+            let trailer = response.results.first { $0.site == "YouTube" && $0.type == "Trailer" }
+            return trailer?.key
+        } catch {
+            throw mapError(error)
+        }
+    }
+
     private func mapError(_ error: Error) -> MovieError {
         if let movieError = error as? MovieError { return movieError }
         if error is URLError { return .networkFailure }
