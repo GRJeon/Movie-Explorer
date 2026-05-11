@@ -36,7 +36,8 @@ final class GetMovieDetailUseCaseTests: XCTestCase {
             releaseDate: "1999-10-15",
             runtime: 139,
             genres: ["드라마"],
-            voteAverage: 8.4
+            voteAverage: 8.4,
+            youtubeKey: nil
         )
         mockRepository.mockDetailResult = .success(expectedDetail)
         

@@ -36,7 +36,8 @@ struct MovieDetailResponseDTO: Decodable {
             releaseDate: releaseDate,
             runtime: runtime,
             genres: genres.map { $0.name },
-            voteAverage: voteAverage
+            voteAverage: voteAverage,
+            youtubeKey: nil
         )
     }
 }

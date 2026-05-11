@@ -17,4 +17,5 @@ nonisolated struct MovieDetail: Equatable {
     let runtime: Int?
     let genres: [String]
     let voteAverage: Double
+    let youtubeKey: String?
 }

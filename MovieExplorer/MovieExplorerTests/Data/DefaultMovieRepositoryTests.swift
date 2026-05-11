@@ -187,7 +187,8 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             releaseDate: "1999-10-15",
             runtime: 139,
             genres: ["드라마", "스릴러"],
-            voteAverage: 8.4
+            voteAverage: 8.4,
+            youtubeKey: nil
         )
         XCTAssertEqual(result, expected)
     }
