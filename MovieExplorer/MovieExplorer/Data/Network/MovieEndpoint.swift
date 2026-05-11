@@ -11,6 +11,7 @@ enum MovieEndpoint: APIEndpoint {
     case popular(page: Int)
     case search(query: String, page: Int)
     case detail(id: Int)
+    case video(id: Int)
 
     private static let apiKey = APIKey.apiKey
 
@@ -26,6 +27,8 @@ enum MovieEndpoint: APIEndpoint {
             return "/3/search/movie"
         case .detail(let id):
             return "/3/movie/\(id)"
+        case .video(let id):
+            return "/3/movie/\(id)/videos"
         }
     }
 
@@ -56,6 +59,10 @@ enum MovieEndpoint: APIEndpoint {
         case .detail:
             return [
                 "language": "ko-KR"
+            ]
+        case .video:
+            return [
+                "language": "en-US"
             ]
         }
     }
