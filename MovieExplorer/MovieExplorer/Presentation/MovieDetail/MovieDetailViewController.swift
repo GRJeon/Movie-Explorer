@@ -152,6 +152,7 @@ final class MovieDetailViewController: UIViewController {
             make.top.equalTo(overviewHeaderLabel.snp.bottom).offset(12)
             make.leading.equalTo(contentView.snp.trailing).multipliedBy(0.05)
             make.trailing.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(24)
         }
     }
 
