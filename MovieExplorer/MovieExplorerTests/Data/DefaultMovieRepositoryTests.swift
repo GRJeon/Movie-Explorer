@@ -193,6 +193,66 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         XCTAssertEqual(result, expected)
     }
 
+    // MARK: - fetchYoutubeKey
+
+    func test_fetchYoutubeKey_YouTube이면서_Trailer인_키값을_반환한다() async throws {
+        // given
+        let movieId = 123
+        let dto = VideoResponseDTO(
+            id: movieId,
+            results: [
+                VideoDTO(key: "key1", site: "Vimeo", type: "Trailer"),
+                VideoDTO(key: "key2", site: "YouTube", type: "Teaser"),
+                VideoDTO(key: "targetKey", site: "YouTube", type: "Trailer"),
+                VideoDTO(key: "key3", site: "YouTube", type: "Trailer")
+            ]
+        )
+        mockNetworkService.requestResult = dto
+
+        // when
+        let key = try await sut.fetchYoutubeKey(id: movieId)
+
+        // then
+        let endpoint = try XCTUnwrap(mockNetworkService.capturedEndpoint as? MovieEndpoint)
+        guard case .video(let capturedId) = endpoint else {
+            XCTFail("endpoint가 .video가 아닙니다")
+            return
+        }
+        XCTAssertEqual(capturedId, movieId)
+        XCTAssertEqual(key, "targetKey", "첫 번째 조건에 맞는 키를 반환해야 합니다")
+    }
+
+    func test_fetchYoutubeKey_조건에맞는_영상이_없으면_nil을_반환한다() async throws {
+        // given
+        let dto = VideoResponseDTO(
+            id: 123,
+            results: [
+                VideoDTO(key: "key1", site: "Vimeo", type: "Trailer"),
+                VideoDTO(key: "key2", site: "YouTube", type: "Teaser")
+            ]
+        )
+        mockNetworkService.requestResult = dto
+
+        // when
+        let key = try await sut.fetchYoutubeKey(id: 123)
+
+        // then
+        XCTAssertNil(key)
+    }
+
+    func test_fetchYoutubeKey_에러발생시_MovieError를_던진다() async {
+        // given
+        mockNetworkService.requestError = URLError(.notConnectedToInternet)
+
+        // when & then
+        do {
+            _ = try await sut.fetchYoutubeKey(id: 123)
+            XCTFail("에러가 발생해야 합니다")
+        } catch {
+            XCTAssertEqual(error as? MovieError, .networkFailure)
+        }
+    }
+
     // MARK: - Error Mapping
 
     func test_fetchPopularMovies_URLError발생시_networkFailure를_반환한다() async {
