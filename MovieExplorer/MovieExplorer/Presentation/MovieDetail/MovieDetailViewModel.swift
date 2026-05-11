@@ -48,8 +48,10 @@ final class MovieDetailViewModel {
             movieDetail = result
             state = .loaded
         } catch let error as MovieError {
+            movieDetail = nil
             state = .error(error.description)
         } catch {
+            movieDetail = nil
             state = .error("예기치 못한 오류가 발생했습니다: \(error.localizedDescription)")
         }
     }
