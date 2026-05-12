@@ -59,6 +59,8 @@ final class MovieDetailViewController: UIViewController {
         label.numberOfLines = 0
         return label
     }()
+
+    private let trailerView = MovieTrailerView()
     
     private let loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
@@ -94,12 +96,13 @@ final class MovieDetailViewController: UIViewController {
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(false, animated: true)
 
-        view.addSubview(backdropImageView)
-        view.addSubview(gradientView)
-        applyGradient()
-
+        scrollView.contentInsetAdjustmentBehavior = .never
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+
+        contentView.addSubview(backdropImageView)
+        contentView.addSubview(gradientView)
+        applyGradient()
 
         view.addSubview(loadingIndicator)
 
@@ -107,6 +110,7 @@ final class MovieDetailViewController: UIViewController {
         contentView.addSubview(titleInfoView)
         contentView.addSubview(overviewHeaderLabel)
         contentView.addSubview(overviewLabel)
+        contentView.addSubview(trailerView)
 
         backdropImageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -152,7 +156,13 @@ final class MovieDetailViewController: UIViewController {
             make.top.equalTo(overviewHeaderLabel.snp.bottom).offset(12)
             make.leading.equalTo(contentView.snp.trailing).multipliedBy(0.05)
             make.trailing.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview().inset(24)
+        }
+
+        trailerView.snp.makeConstraints { make in
+            make.top.equalTo(overviewLabel.snp.bottom).offset(40)
+            make.leading.equalTo(contentView.snp.trailing).multipliedBy(0.05)
+            make.trailing.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(40)
         }
     }
 
@@ -194,6 +204,8 @@ final class MovieDetailViewController: UIViewController {
             releaseDateText: viewModel.releaseDateText,
             genres: movie.genres
         )
+
+        trailerView.configure(with: movie.youtubeKey)
 
         if let url = viewModel.movieDetail?.backdropPath {
             backdropImageView.kf.setImage(with: url, options: [.transition(.fade(0.3))])
