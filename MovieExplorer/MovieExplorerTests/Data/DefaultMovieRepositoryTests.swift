@@ -54,8 +54,8 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             page: 1,
             totalPages: 5,
             results: [
-                MovieDTO(id: 1, title: "영화1", posterPath: "/poster1.jpg", voteAverage: 8.5),
-                MovieDTO(id: 2, title: "영화2", posterPath: nil, voteAverage: 7.0)
+                MovieDTO(id: 1, title: "영화1", posterPath: "/poster1.jpg", voteAverage: 8.5, releaseDate: nil, popularity: nil),
+                MovieDTO(id: 2, title: "영화2", posterPath: nil, voteAverage: 7.0, releaseDate: nil, popularity: nil)
             ]
         )
         mockNetworkService.requestResult = dto
@@ -111,7 +111,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             page: 1,
             totalPages: 3,
             results: [
-                MovieDTO(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0)
+                MovieDTO(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0, releaseDate: nil, popularity: nil)
             ]
         )
         mockNetworkService.requestResult = dto
