@@ -23,11 +23,15 @@ struct MovieDTO: Decodable {
     let title: String
     let posterPath: String?
     let voteAverage: Double
+    let releaseDate: String?
+    let popularity: Double?
 
     enum CodingKeys: String, CodingKey {
         case id, title
         case posterPath = "poster_path"
         case voteAverage = "vote_average"
+        case releaseDate = "release_date"
+        case popularity
     }
 
     func toDomain() -> Movie {
@@ -36,6 +40,17 @@ struct MovieDTO: Decodable {
             title: title,
             posterPath: ImageURLMapper.makeFullPath(imagePath: posterPath),
             voteAverage: voteAverage
+        )
+    }
+
+    func toSearchResultDomain() -> SearchResult {
+        SearchResult(
+            id: id,
+            title: title,
+            posterPath: ImageURLMapper.makeFullPath(imagePath: posterPath),
+            releaseDate: releaseDate ?? "",
+            voteAverage: voteAverage,
+            popularity: popularity ?? 0.0
         )
     }
 }
