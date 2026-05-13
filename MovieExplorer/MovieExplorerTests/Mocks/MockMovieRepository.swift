@@ -33,8 +33,25 @@ final class MockMovieRepository: MovieRepositoryProtocol {
         return ([], 0)
     }
     
+    var mockSearchResult: Result<(movies: [SearchResult], totalPages: Int), Error>?
+    var searchMoviesCallCount = 0
+    var lastRequestedQuery: String?
+
     func searchMovies(query: String, page: Int) async throws -> (movies: [SearchResult], totalPages: Int) {
-        fatalError("Not needed for this test")
+        searchMoviesCallCount += 1
+        lastRequestedQuery = query
+        lastRequestedPage = page
+        
+        if let result = mockSearchResult {
+            switch result {
+            case .success(let data):
+                return data
+            case .failure(let error):
+                throw error
+            }
+        }
+        
+        return ([], 0)
     }
     
     func fetchMovieDetail(id: Int) async throws -> MovieDetail {
