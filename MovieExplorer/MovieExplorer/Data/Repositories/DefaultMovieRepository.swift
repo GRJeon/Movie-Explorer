@@ -26,11 +26,11 @@ final class DefaultMovieRepository: MovieRepositoryProtocol {
         }
     }
 
-    func searchMovies(query: String, page: Int) async throws -> (movies: [Movie], totalPages: Int) {
+    func searchMovies(query: String, page: Int) async throws -> (movies: [SearchResult], totalPages: Int) {
         do {
             let endpoint = MovieEndpoint.search(query: query, page: page)
             let response: MovieResponseDTO = try await networkService.request(endpoint: endpoint)
-            let movies = response.results.map { $0.toDomain() }
+            let movies = response.results.map { $0.toSearchResultDomain() }
             return (movies: movies, totalPages: response.totalPages)
         } catch {
             throw mapError(error)
