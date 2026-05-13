@@ -73,8 +73,12 @@ final class SearchResultCell: UICollectionViewCell {
         contentView.addSubview(labelStack)
 
         posterImageView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview().inset(8)
+            make.leading.equalToSuperview().inset(12)
+            make.centerY.equalToSuperview()
             make.width.equalTo(60)
+            make.height.equalTo(posterImageView.snp.width).multipliedBy(1.5)
+            make.top.greaterThanOrEqualToSuperview().inset(8)
+            make.bottom.lessThanOrEqualToSuperview().inset(8)
         }
 
         labelStack.snp.makeConstraints { make in
