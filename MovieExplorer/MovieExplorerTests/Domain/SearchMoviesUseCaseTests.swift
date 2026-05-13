@@ -65,6 +65,19 @@ final class SearchMoviesUseCaseTests: XCTestCase {
         XCTAssertEqual(capturedQuery, "인터스텔라")
     }
 
+    func test_문자열_양끝의_공백과_줄바꿈을_제거한_후_요청한다() async throws {
+        // given
+        let query = "   인터스텔라 \n"
+        mockMovieRepository.mockSearchResult = .success((movies: [], totalPages: 1))
+        
+        // when
+        _ = try await sut.execute(query: query)
+        
+        // then
+        let capturedQuery = mockMovieRepository.lastRequestedQuery
+        XCTAssertEqual(capturedQuery, "인터스텔라")
+    }
+
     // MARK: - 빈 문자열 테스트
 
     func test_쿼리가_비어있을_경우_요청하지_않고_빈_배열을_반환한다() async throws {
