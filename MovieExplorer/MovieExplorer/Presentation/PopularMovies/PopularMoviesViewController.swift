@@ -21,12 +21,25 @@ final class PopularMoviesViewController: UIViewController {
     }
 
     private let viewModel: PopularMoviesViewModel
+    private let searchViewModel: SearchMoviesViewModel
+    private lazy var searchResultsVC = SearchViewController(viewModel: searchViewModel)
+
     private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     private var cancellables = Set<AnyCancellable>()
     private var imagePrefetchers: [IndexPath: ImagePrefetcher] = [:]
-    
+
+    // MARK: - UI
+
     private lazy var topBarView: TopBarView = {
         return TopBarView(title: "Movie Explorer")
+    }()
+
+    private lazy var searchBar: UISearchBar = {
+        let bar = UISearchBar()
+        bar.placeholder = "영화를 검색해보세요"
+        bar.searchBarStyle = .minimal
+        bar.delegate = self
+        return bar
     }()
 
     private lazy var collectionView: UICollectionView = {
@@ -38,40 +51,54 @@ final class PopularMoviesViewController: UIViewController {
         cv.prefetchDataSource = self
         return cv
     }()
-    
-    init(viewModel: PopularMoviesViewModel) {
+
+    // MARK: - Init
+
+    init(viewModel: PopularMoviesViewModel, searchViewModel: SearchMoviesViewModel) {
         self.viewModel = viewModel
+        self.searchViewModel = searchViewModel
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
         setupUI()
+        setupSearchResultsChild()
         configureDataSource()
         bindViewModel()
-        
+
         Task {
             await viewModel.fetchNextPage()
         }
     }
-    
+
+    // MARK: - Setup
+
     private func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(topBarView)
+        view.addSubview(searchBar)
         view.addSubview(collectionView)
-        
+
         topBarView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
-        
-        collectionView.snp.makeConstraints { make in
+
+        searchBar.snp.makeConstraints { make in
             make.top.equalTo(topBarView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+        }
+
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
@@ -104,9 +131,33 @@ final class PopularMoviesViewController: UIViewController {
         layoutButton.setImage(UIImage(systemName: "square.grid.2x2"), for: .normal)
         layoutButton.showsMenuAsPrimaryAction = true
         layoutButton.menu = menu
-        
+
         topBarView.setRightView(layoutButton)
     }
+
+    private func setupSearchResultsChild() {
+        addChild(searchResultsVC)
+        view.addSubview(searchResultsVC.view)
+        searchResultsVC.didMove(toParent: self)
+
+        searchResultsVC.view.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+
+        searchResultsVC.view.isHidden = true
+    }
+
+    private func showSearchResults() {
+        view.bringSubviewToFront(searchResultsVC.view)
+        searchResultsVC.view.isHidden = false
+    }
+
+    private func hideSearchResults() {
+        searchResultsVC.view.isHidden = true
+    }
+
+    // MARK: - Layout
 
     private func changeLayout(columns: Int) {
         let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
@@ -114,7 +165,6 @@ final class PopularMoviesViewController: UIViewController {
         let layout = createCompositionalLayout(columns: columns)
         collectionView.setCollectionViewLayout(layout, animated: true)
 
-        // 보던 item을 top으로 스크롤
         if let firstVisibleIndexPath {
             collectionView.scrollToItem(at: firstVisibleIndexPath, at: .top, animated: false)
         }
@@ -136,13 +186,15 @@ final class PopularMoviesViewController: UIViewController {
                 heightDimension: .absolute(groupHeight)
             )
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-            
+
             return NSCollectionLayoutSection(group: group)
         }
     }
-    
+
+    // MARK: - DataSource
+
     private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) { (cv: UICollectionView, indexPath: IndexPath, movie: Movie) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) { (cv, indexPath, movie) in
             guard let cell = cv.dequeueReusableCell(withReuseIdentifier: MovieCollectionViewCell.reuseIdentifier, for: indexPath) as? MovieCollectionViewCell else {
                 return UICollectionViewCell()
             }
@@ -150,7 +202,9 @@ final class PopularMoviesViewController: UIViewController {
             return cell
         }
     }
-    
+
+    // MARK: - Binding
+
     private func bindViewModel() {
         viewModel.$movies
             .receive(on: DispatchQueue.main)
@@ -161,7 +215,7 @@ final class PopularMoviesViewController: UIViewController {
                 self?.dataSource.apply(snapshot, animatingDifferences: true)
             }
             .store(in: &cancellables)
-            
+
         viewModel.$errorMessage
             .receive(on: DispatchQueue.main)
             .compactMap { $0 }
@@ -174,6 +228,32 @@ final class PopularMoviesViewController: UIViewController {
     }
 }
 
+// MARK: - UISearchBarDelegate
+extension PopularMoviesViewController: UISearchBarDelegate {
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
+        showSearchResults()
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchViewModel.updateSearchQuery(searchText)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.resignFirstResponder()
+        searchViewModel.clearSearchQuery()
+        hideSearchResults()
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+}
+
+// MARK: - UICollectionViewDelegate
 extension PopularMoviesViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -187,6 +267,7 @@ extension PopularMoviesViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDataSourcePrefetching
 extension PopularMoviesViewController: UICollectionViewDataSourcePrefetching {
 
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
@@ -200,7 +281,7 @@ extension PopularMoviesViewController: UICollectionViewDataSourcePrefetching {
             }
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
             imagePrefetchers[indexPath]?.stop()
@@ -218,8 +299,10 @@ struct PopularMoviesVC_Preview: PreviewProvider {
             let networkService = NetworkService()
             let repository = DefaultMovieRepository(networkService: networkService)
             let useCase = DefaultFetchPopularMoviesUseCase(movieRepository: repository)
+            let searchUseCase = DefaultSearchMoviesUseCase(movieRepository: repository)
             let viewModel = PopularMoviesViewModel(fetchPopularMoviesUseCase: useCase)
-            let vc = PopularMoviesViewController(viewModel: viewModel)
+            let searchViewModel = SearchMoviesViewModel(searchMoviesUseCase: searchUseCase)
+            let vc = PopularMoviesViewController(viewModel: viewModel, searchViewModel: searchViewModel)
             return UINavigationController(rootViewController: vc)
         }
     }
