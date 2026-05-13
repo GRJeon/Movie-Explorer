@@ -33,7 +33,7 @@ final class MockMovieRepository: MovieRepositoryProtocol {
         return ([], 0)
     }
     
-    func searchMovies(query: String, page: Int) async throws -> (movies: [Movie], totalPages: Int) {
+    func searchMovies(query: String, page: Int) async throws -> (movies: [SearchResult], totalPages: Int) {
         fatalError("Not needed for this test")
     }
     

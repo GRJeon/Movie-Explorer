@@ -7,7 +7,7 @@
 
 protocol MovieRepositoryProtocol {
     func fetchPopularMovies(page: Int) async throws -> (movies: [Movie], totalPages: Int)
-    func searchMovies(query: String, page: Int) async throws -> (movies: [Movie], totalPages: Int)
+    func searchMovies(query: String, page: Int) async throws -> (movies: [SearchResult], totalPages: Int)
     func fetchMovieDetail(id: Int) async throws -> MovieDetail
     func fetchYoutubeKey(id: Int) async throws -> String?
 }

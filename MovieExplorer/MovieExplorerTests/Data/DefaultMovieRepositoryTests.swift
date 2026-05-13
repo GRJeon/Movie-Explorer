@@ -111,7 +111,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             page: 1,
             totalPages: 3,
             results: [
-                MovieDTO(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0, releaseDate: nil, popularity: nil)
+                MovieDTO(id: 10, title: "인터스텔라", posterPath: "/interstellar.jpg", voteAverage: 9.0, releaseDate: "2014-11-05", popularity: 123.4)
             ]
         )
         mockNetworkService.requestResult = dto
@@ -122,11 +122,13 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         // then
         XCTAssertEqual(result.totalPages, 3)
         XCTAssertEqual(result.movies.count, 1)
-        let expectedMovie = Movie(id: 10, title: "인터스텔라", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/interstellar.jpg"), voteAverage: 9.0)
+        let expectedMovie = SearchResult(id: 10, title: "인터스텔라", posterPath: URL(string: "https://image.tmdb.org/t/p/w500/interstellar.jpg"), releaseDate: "2014-11-05", voteAverage: 9.0, popularity: 123.4)
         XCTAssertEqual(result.movies[0].id, expectedMovie.id)
         XCTAssertEqual(result.movies[0].title, expectedMovie.title)
         XCTAssertEqual(result.movies[0].posterPath, expectedMovie.posterPath)
+        XCTAssertEqual(result.movies[0].releaseDate, expectedMovie.releaseDate)
         XCTAssertEqual(result.movies[0].voteAverage, expectedMovie.voteAverage)
+        XCTAssertEqual(result.movies[0].popularity, expectedMovie.popularity)
     }
 
 
