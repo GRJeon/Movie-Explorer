@@ -18,11 +18,14 @@ final class SearchViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Section, SearchResult>!
     private var cancellables = Set<AnyCancellable>()
 
+    var onMovieSelected: ((Int) -> Void)?
+
     private lazy var collectionView: UICollectionView = {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         cv.backgroundColor = .systemBackground
         cv.register(SearchResultCell.self, forCellWithReuseIdentifier: SearchResultCell.reuseIdentifier)
         cv.keyboardDismissMode = .onDrag
+        cv.delegate = self
         return cv
     }()
 
@@ -141,5 +144,15 @@ final class SearchViewController: UIViewController {
 
         placeholderLabel.isHidden = isQueryActive
         emptyStateLabel.isHidden = !results.isEmpty || !isQueryActive
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+extension SearchViewController: UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        guard let result = dataSource.itemIdentifier(for: indexPath) else { return }
+        onMovieSelected?(result.id)
     }
 }

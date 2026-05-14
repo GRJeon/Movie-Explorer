@@ -24,6 +24,8 @@ final class PopularMoviesViewController: UIViewController {
     private let searchViewModel: SearchMoviesViewModel
     private lazy var searchResultsVC = SearchViewController(viewModel: searchViewModel)
 
+    var onMovieSelected: ((Int) -> Void)?
+
     private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     private var cancellables = Set<AnyCancellable>()
     private var imagePrefetchers: [IndexPath: ImagePrefetcher] = [:]
@@ -136,6 +138,10 @@ final class PopularMoviesViewController: UIViewController {
     }
 
     private func setupSearchResultsChild() {
+        searchResultsVC.onMovieSelected = { [weak self] id in
+            self?.onMovieSelected?(id)
+        }
+
         addChild(searchResultsVC)
         view.addSubview(searchResultsVC.view)
         searchResultsVC.didMove(toParent: self)
@@ -255,6 +261,12 @@ extension PopularMoviesViewController: UISearchBarDelegate {
 
 // MARK: - UICollectionViewDelegate
 extension PopularMoviesViewController: UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        guard let movie = dataSource.itemIdentifier(for: indexPath) else { return }
+        onMovieSelected?(movie.id)
+    }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let currentItemCount = viewModel.movies.count
