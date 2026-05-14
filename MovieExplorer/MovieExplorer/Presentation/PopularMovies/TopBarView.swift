@@ -56,4 +56,8 @@ final class TopBarView: UIView {
         rightButtonContainer.arrangedSubviews.forEach { $0.removeFromSuperview() }
         rightButtonContainer.addArrangedSubview(view)
     }
+    
+    func addRightView(_ view: UIView) {
+        rightButtonContainer.addArrangedSubview(view)
+    }
 }

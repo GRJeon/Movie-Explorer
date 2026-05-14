@@ -25,6 +25,7 @@ final class PopularMoviesViewController: UIViewController {
     private lazy var searchResultsVC = SearchViewController(viewModel: searchViewModel)
 
     var onMovieSelected: ((Int) -> Void)?
+    var onInfoTapped: (() -> Void)?
 
     private var dataSource: UICollectionViewDiffableDataSource<Section, Movie>!
     private var cancellables = Set<AnyCancellable>()
@@ -139,7 +140,14 @@ final class PopularMoviesViewController: UIViewController {
         layoutButton.showsMenuAsPrimaryAction = true
         layoutButton.menu = menu
 
+        let infoButton = UIButton(type: .system)
+        infoButton.setImage(UIImage(systemName: "info.circle"), for: .normal)
+        infoButton.addAction(UIAction { [weak self] _ in
+            self?.onInfoTapped?()
+        }, for: .touchUpInside)
+
         topBarView.setRightView(layoutButton)
+        topBarView.addRightView(infoButton)
     }
 
     private func setupSearchResultsChild() {
