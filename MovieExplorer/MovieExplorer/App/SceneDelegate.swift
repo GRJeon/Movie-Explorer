@@ -10,20 +10,16 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    private var coordinator: AppCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
-        let networkService = NetworkService()
-        let repository = DefaultMovieRepository(networkService: networkService)
-        let useCase = DefaultFetchPopularMoviesUseCase(movieRepository: repository)
-        let viewModel = PopularMoviesViewModel(fetchPopularMoviesUseCase: useCase)
+        let navigationController = UINavigationController()
+        coordinator = AppCoordinator(navigationController: navigationController)
+        coordinator?.start()
 
-        let rootViewController = PopularMoviesViewController(viewModel: viewModel)
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        
         window.rootViewController = navigationController
         self.window = window
         window.makeKeyAndVisible()
