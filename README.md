@@ -8,6 +8,22 @@ TMDB API 기반 영화 탐색 iOS 앱.
 
 > **iOS 15+** · **Swift** · **Combine** · **MVVM-C** · **Clean Architecture** · **TDD**
 
+## 목차
+- [🚀 기술 스택](#-기술-스택)
+- [📐 Architecture Overview](#-architecture-overview)
+- [🔥 Technical Decisions](#-technical-decisions)
+  - [1. 실시간 검색 — 레이스 컨디션 방어와 네트워크 최적화](#1-실시간-검색--레이스-컨디션-방어와-네트워크-최적화)
+  - [2. 무한 스크롤 — 서버 데이터 중복에 대한 방어적 프로그래밍](#2-무한-스크롤--서버-데이터-중복에-대한-방어적-프로그래밍)
+  - [3. 이미지 성능 최적화 — 2계층 Prefetch + 다운샘플링](#3-이미지-성능-최적화--2계층-prefetch--다운샘플링)
+  - [4. 화면 전환 — Coordinator 패턴을 통한 Navigation 책임 분리](#4-화면-전환--coordinator-패턴을-통한-navigation-책임-분리)
+  - [5. 영화 상세 — UseCase 내 API 호출 통합](#5-영화-상세--usecase-내-api-호출-통합)
+- [🛠 Troubleshooting](#-troubleshooting)
+  - [UIScrollView 내 WKWebView 배치 시 발생하는 재귀적 레이아웃 업데이트 루프 해결](#uiscrollview-내-wkwebview-배치-시-발생하는-재귀적-레이아웃-업데이트-루프-해결)
+  - [커스텀 레이아웃 환경에서의 UISearchController 충돌 해결](#커스텀-레이아웃-환경에서의-uisearchcontroller-충돌-해결)
+  - [CAGradientLayer의 동적 크기 갱신 지연 해결](#cagradientlayer의-동적-크기-갱신-지연-해결)
+- [✅ 테스트](#-테스트)
+- [📁 프로젝트 구조](#-프로젝트-구조)
+
 ## 기술 스택
 
 | 카테고리 | 기술 |
