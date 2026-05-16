@@ -19,10 +19,11 @@ TMDB API 기반 영화 탐색 iOS 앱.
   - [5. 영화 상세 — UseCase 내 API 호출 통합](#5-영화-상세--usecase-내-api-호출-통합)
 - [🛠 Troubleshooting](#troubleshooting)
   - [UIScrollView 내 WKWebView 배치 시 발생하는 재귀적 레이아웃 업데이트 루프 해결](#uiscrollview-내-wkwebview-배치-시-발생하는-재귀적-레이아웃-업데이트-루프-해결)
-  - [커스텀 레이아웃 환경에서의 UISearchController 충돌 해결](#커스텀-레이아웃-환경에서의-uisearchcontroller-충돌-해결)
-  - [CAGradientLayer의 동적 크기 갱신 지연 해결](#cagradientlayer의-동적-크기-갱신-지연-해결)
+  - [커스텀 레이아웃 환경에서의 UISearchController 충돌 해결](#uisearchcontroller-레이아웃-충돌)
+  - [CAGradientLayer의 동적 크기 적용](#cagradientlayer-동적-크기-적용)
 - [✅ 테스트](#테스트)
 - [📁 프로젝트 구조](#프로젝트-구조)
+- [API](#API)
 
 ## 기술 스택
 
