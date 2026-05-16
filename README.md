@@ -113,6 +113,8 @@ graph TD
 
 ### 1. 실시간 검색 — 레이스 컨디션 방어와 네트워크 최적화
 
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/16)
+
 **문제 상황**  
 실시간 검색은 사용자 타이핑마다 API를 호출하므로 두 가지 문제가 발생합니다.
 - 불필요한 네트워크 요청이 폭증하여 서버 부하 증가
@@ -149,6 +151,8 @@ private func performSearch(query: String) {
 
 ### 2. 무한 스크롤 — 서버 데이터 중복에 대한 방어적 프로그래밍
 
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/13)
+
 **문제 상황**  
 TMDB API의 페이지네이션 응답에서, 15페이지 마지막 아이템과 16페이지 첫 번째 아이템이 동일한 영화('니모를 찾아서')로 내려오는 서버 측 오류가 실제로 발생했습니다. `DiffableDataSource`는 아이템의 고유성을 전제로 동작하므로, 중복 아이템이 삽입되면 런타임 크래시가 발생합니다.
 
@@ -171,6 +175,8 @@ func fetchNextPage() async {
 ---
 
 ### 3. 이미지 성능 최적화 — 2계층 Prefetch + 다운샘플링
+
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/13)
 
 **문제 상황**  
 영화 포스터 그리드에서 빠르게 스크롤하면 이미지 로딩 지연이 발생하고, 원본 해상도의 이미지가 메모리에 적재되면 대량의 메모리를 소비합니다.
@@ -212,6 +218,8 @@ ViewController가 다음 화면의 존재를 알 필요가 없으므로, 딥링�
 
 ### 5. 영화 상세 — UseCase 내 API 호출 통합
 
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/15)
+
 **문제 상황**  
 영화 상세 화면은 상세 정보 API(`/movie/{id}`)와 예고편 API(`/movie/{id}/videos`) 두 개의 엔드포인트를 호출해야 합니다. ViewModel에서 각각 호출하면 두 개의 비동기 상태를 관리해야 하고, Presentation 레이어에 데이터 조합 로직이 노출됩니다.
 
@@ -238,6 +246,8 @@ ViewModel은 단일 `state` 프로퍼티(`idle → loading → loaded | error`)�
 
 ### UIScrollView 내 WKWebView 배치 시 발생하는 재귀적 레이아웃 업데이트 루프 해결
 
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/15)
+
 영화 상세 화면에 유튜브 예고편 웹뷰를 임베드하자 앱이 완전히 멈추는 현상이 발생했습니다.
 
 - **원인 추적**: 웹뷰 크기를 줄여 스크롤이 불필요해지자 정상 동작하는 것을 확인 → ScrollView의 `contentInsetAdjustmentBehavior`가 ContentView 크기를 조정할 때마다 WKWebView가 리렌더링되고, 이것이 다시 레이아웃 갱신을 트리거하는 무한 루프가 원인
@@ -245,12 +255,16 @@ ViewModel은 단일 `state` 프로퍼티(`idle → loading → loaded | error`)�
 
 ### UISearchController 레이아웃 충돌
 
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/16)
+
 커스텀 `TopBarView` 환경에서 `UISearchController`를 사용하면, 활성화 시 SearchBar가 화면 밖으로 이탈하는 문제가 발생했습니다.
 
 - **원인**: `UISearchController`는 자체적으로 `searchBar`의 위치를 제어하므로, `navigationItem` 없이 배치하면 레이아웃 제약이 충돌
 - **해결**: 일반 `UISearchBar` + `SearchViewController`를 Child ViewController로 구성하여 완전한 레이아웃 제어권 확보
 
 ### CAGradientLayer 동적 크기 적용
+
+- [관련 PR](https://github.com/GRJeon/Movie-Explorer/pull/13)
 
 백드롭 이미지 위에 그라디언트 오버레이를 적용할 때, `CAGradientLayer`는 Auto Layout과 독립적으로 동작하여 초기 frame이 `.zero`인 문제가 있었습니다.
 
