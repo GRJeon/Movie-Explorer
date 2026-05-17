@@ -95,7 +95,7 @@ graph TD
 
     %% Cross-Layer Dependencies
     Presentation -- "Protocol 의존" --> Domain
-    Domain -- "Interface 구현" --> Data
+    Data -- "Interface 구현, 의존성 역전" --> Domain
 
     %% Styling
     style Presentation fill:#f9f9f9,stroke:#333,stroke-width:2px
